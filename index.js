@@ -16,7 +16,7 @@ CollectionDriver = require('./collectionDriver').CollectionDriver;
 
 var app = express();
 
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 3001);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
@@ -32,7 +32,7 @@ mongoClient.open(function(err, mongoClient) { //C
       console.error("Error! Exiting... Must start MongoDB first");
       process.exit(1); //D
   }
-  var db = mongoClient.db("MyDatabase");  //E
+  var db = mongoClient.db("webappTest");  //E
   collectionDriver = new CollectionDriver(db); //F
 });
 
@@ -82,8 +82,7 @@ app.post('/:collection/postNewItem', function(req, res) { //A
     var object = req.body;
     var collection = req.params.collection;
     collectionDriver.save(collection, object, function(err,docs) {
-          if (err) { res.send(400, err); } 
-          else { res.send(201, docs); } //B
+          res.send((err === null) ? { msg: '' } : { msg:'error: ' + err });
      });
 });
 
@@ -115,9 +114,8 @@ app.delete('/:collection/deleteItemById/:entity', function(req, res) { //A
     var entity = params.entity;
     var collection = params.collection;
     if (entity) {
-       collectionDriver.delete(collection, entity, function(error, objs) { //B
-          if (error) { res.send(400, error); }
-          else { res.send(200, objs); } //C 200 b/c includes the original doc
+       collectionDriver.delete(collection, entity, function(err, objs) { //B
+          res.send((err === null) ? { msg: '' } : { msg:'error: ' + err });
        });
    } else {
        var error = { "message" : "Cannot DELETE a whole collection" };
