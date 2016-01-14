@@ -74,6 +74,27 @@ app.get('/:collection/:entity', function(req, res) { //I
    }
 });
 
+// collection/entity
+/*
+* Gets JSON Object with matching name and password
+*/ 
+app.get('/:collection/checkLoginCredentials/:user/:pass', function(req, res) { //I
+   var params = req.params;
+   var user = params.user;
+   var pass = params.pass;
+   var collection = params.collection;
+   if (user) {
+       collectionDriver.checkCredentials(collection, user, pass, function(error, objs) { //J
+        //returns error if ID does not exist
+          if (error) { res.send(400, error); }
+          //else it returns JSON Object
+          else { res.send(200, objs); } //K
+       });
+   } else {
+      res.send(400, {error: 'bad url', url: req.url});
+   }
+});
+
 //  collection/postNewItem
 /*
 * Posts a new item to a given collection
